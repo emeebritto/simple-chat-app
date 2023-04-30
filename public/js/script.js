@@ -3,6 +3,10 @@ const messageContainer = document.getElementById('message-container');
 const messageForm = document.getElementById('send-container');
 const messageInput = document.getElementById('message-input');
 
+const userRef = (username, author) => {
+  if (username === author) return "You";
+  return author;
+};
 
 let name = "";
 while(name.length < 3) {
@@ -10,11 +14,30 @@ while(name.length < 3) {
 }
 
 const username = name;
-appendMessage({ text: 'You joined', theme: "warn-msg-theme" });
+appendMessage({ text: `You joined`, theme: "warn-msg-theme" });
 socket.emit('new-user', username);
 
+socket.on('chat-context', data => {
+  for (let msg of data.chat) {
+    if (msg.isWarn) {
+      appendMessage({
+        text: msg.message,
+        theme: "warn-msg-theme"
+      });
+    } else {
+      let author = userRef(username, msg.name);
+      let isYou = author === "You" && msg.name != "You";
+      let msgTheme = isYou ? "self-msg-theme" : "other-msg-theme";
+      appendMessage({
+        text: `${author}: ${msg.message}`,
+        theme: msgTheme
+      });
+    }
+  }
+});
+
 socket.on('chat-message', data => {
-  appendMessage({ text: `${data.name}: ${data.message}` });
+  appendMessage({ text: `${userRef(username, data.name)}: ${data.message}` });
 });
 
 socket.on('user-connected', name => {
@@ -39,4 +62,5 @@ function appendMessage({ text, theme="other-msg-theme" }) {
   if (theme) messageElement.setAttribute("class", theme);
   messageElement.innerText = text;
   messageContainer.append(messageElement);
+  window.scroll(0, document.body.scrollHeight);
 }

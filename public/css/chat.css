@@ -12,6 +12,7 @@ body {
 #message-container {
   width: 80%;
   max-width: 1200px;
+  margin: 0 0 100px 0;
 }
 
 #message-container > .self-msg-theme {
