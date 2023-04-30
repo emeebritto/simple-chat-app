@@ -1,4 +1,4 @@
-const socket = io('http://localhost:3010');
+const socket = io('https://chat.neblika.com');
 const messageContainer = document.getElementById('message-container');
 const messageForm = document.getElementById('send-container');
 const messageInput = document.getElementById('message-input');
@@ -6,7 +6,7 @@ const messageInput = document.getElementById('message-input');
 
 let name = "";
 while(name.length < 3) {
-  name = prompt('What is your name?');
+  name = prompt('What is your name? (min: 3 caracters)');
 }
 
 const username = name;

@@ -1,9 +1,13 @@
-const io = require('socket.io')(3010);
+const http = require('http');
 const express = require('express');
+const socketIO = require('socket.io');
 
-app = express();
-app.use(express.static(`${__dirname}/public/`));
+const app = express();
 const PORT = process.env.PORT || 3000;
+const server = http.createServer(app);
+const io = socketIO(server);
+
+app.use(express.static(`${__dirname}/public/`));
 
 const users = {};
 
@@ -21,7 +25,7 @@ io.on('connection', socket => {
   });
 });
 
-app.listen(PORT, () => {
+server.listen(PORT, () => {
     console.log('Started: ' + new Date());
     console.log(`url: http://localhost:${PORT}`);
-})
+});
