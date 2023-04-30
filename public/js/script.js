@@ -14,14 +14,13 @@ while(name.length < 3) {
 }
 
 const username = name;
-appendMessage({ text: `You joined`, theme: "warn-msg-theme" });
 socket.emit('new-user', username);
 
 socket.on('chat-context', data => {
   for (let msg of data.chat) {
     if (msg.isWarn) {
       appendMessage({
-        text: msg.message,
+        text: msg.message.replace(username, "You"),
         theme: "warn-msg-theme"
       });
     } else {
@@ -34,6 +33,7 @@ socket.on('chat-context', data => {
       });
     }
   }
+  appendMessage({ text: `You joined`, theme: "warn-msg-theme" });
 });
 
 socket.on('chat-message', data => {
