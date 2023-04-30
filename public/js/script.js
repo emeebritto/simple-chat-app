@@ -1,4 +1,4 @@
-const socket = io('https://chat.neblika.com');
+const socket = io('https://emee-chat.hf.space');
 const messageContainer = document.getElementById('message-container');
 const messageForm = document.getElementById('send-container');
 const messageInput = document.getElementById('message-input');
