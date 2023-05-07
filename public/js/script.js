@@ -19,21 +19,20 @@ socket.emit('new-user', username);
 socket.on('chat-context', data => {
   for (let msg of data.chat) {
     if (msg.isWarn) {
-      appendMessage({
-        text: msg.message.replace(username, "You"),
-        theme: "warn-msg-theme"
+      appendWarn({
+        text: msg.message.replace(username, "You")
       });
     } else {
       let author = userRef(username, msg.name);
       let isYou = author === "You" && msg.name != "You";
-      let msgTheme = isYou ? "self-msg-theme" : "other-msg-theme";
       appendMessage({
-        text: `${author}: ${msg.message}`,
-        theme: msgTheme
+        author: author,
+        text: msg.message,
+        self: isYou
       });
     }
   }
-  appendMessage({ text: `You joined`, theme: "warn-msg-theme" });
+  appendWarn({ text: `You joined` });
 });
 
 socket.on('chat-message', data => {
@@ -41,26 +40,35 @@ socket.on('chat-message', data => {
 });
 
 socket.on('user-connected', name => {
-  appendMessage({ text: `${name} connected`, theme: "warn-msg-theme" });
+  appendWarn({ text: `${name} connected`, theme: "warn-msg-theme" });
 });
 
 socket.on('user-disconnected', name => {
-  appendMessage({ text: `${name} disconnected`, theme: "warn-msg-theme" });
+  appendWarn({ text: `${name} disconnected`, theme: "warn-msg-theme" });
 });
 
 messageForm.addEventListener('submit', e => {
   e.preventDefault();
   if (!messageInput.value) return
   const message = messageInput.value;
-  appendMessage({ text: `You: ${message}`, theme: "self-msg-theme"});
+  appendMessage({ author: "You", text: message, self: true });
   socket.emit('send-chat-message', message);
   messageInput.value = '';
 });
 
-function appendMessage({ text, theme="other-msg-theme" }) {
+function appendWarn({ text }) {
   const messageElement = document.createElement('div');
-  if (theme) messageElement.setAttribute("class", theme);
+  messageElement.setAttribute("class", "warn-msg-theme");
   messageElement.innerText = text;
+  messageContainer.append(messageElement);
+  window.scroll(0, document.body.scrollHeight);
+}
+
+function appendMessage({ author, text, self }) {
+  const messageElement = document.createElement('div');
+  const msgTheme = self ? "self-msg-theme" : "other-msg-theme";
+  messageElement.setAttribute("class", msgTheme);
+  messageElement.innerHTML = `<div><strong>${author}</strong>: ${text}</div>`;
   messageContainer.append(messageElement);
   window.scroll(0, document.body.scrollHeight);
 }
