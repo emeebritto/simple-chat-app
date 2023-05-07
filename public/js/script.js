@@ -36,7 +36,7 @@ socket.on('chat-context', data => {
 });
 
 socket.on('chat-message', data => {
-  appendMessage({ text: `${userRef(username, data.name)}: ${data.message}` });
+  appendMessage({ author: data.name, text: data.message, self: false });
 });
 
 socket.on('user-connected', name => {
